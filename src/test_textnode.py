@@ -8,13 +8,13 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(node, node2)
 
     def test_eq_2(self):
-        node = TextNode("", TextType.PLAIN)
-        node2 = TextNode("", TextType.PLAIN)
+        node = TextNode("", TextType.TEXT)
+        node2 = TextNode("", TextType.TEXT)
         self.assertEqual(node, node2)
 
     def test_n_eq(self):
-        node = TextNode("Hello", TextType.PLAIN)
-        node2 = TextNode("World", TextType.PLAIN)
+        node = TextNode("Hello", TextType.TEXT)
+        node2 = TextNode("World", TextType.TEXT)
         self.assertNotEqual(node, node2)
 
     def test_n_eq_2(self):
@@ -23,8 +23,8 @@ class TestTextNode(unittest.TestCase):
         self.assertNotEqual(node, node2)
 
     def test_n_eq_3(self):
-        node = TextNode("Hello", TextType.PLAIN, "google.com")
-        node2 = TextNode("Hello", TextType.PLAIN, "boot.dev")
+        node = TextNode("Hello", TextType.TEXT, "google.com")
+        node2 = TextNode("Hello", TextType.TEXT, "boot.dev")
         self.assertNotEqual(node, node2)
 
 
