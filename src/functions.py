@@ -65,3 +65,83 @@ def extract_markdown_images(text):
 def extract_markdown_links(text):
     matches = re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
     return matches
+
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    to_check = ""
+    for old in old_nodes:
+        if old.text_type != TextType.TEXT:
+            new_nodes.append(old)
+            continue
+
+        matches = extract_markdown_images(old.text)
+
+        if matches == []:
+            new_nodes.append(old)
+            continue
+        
+        to_check = old.text
+        for match in matches:
+            while True:
+                sections = to_check.split(f"![{match[0]}]({match[1]})", 1)
+                if len(sections) == 1:
+                    break
+                if not sections[0] == "":
+                    new_nodes.append(TextNode(sections[0], TextType.TEXT))
+                new_nodes.append(TextNode(match[0], TextType.IMAGE, match[1]))
+                to_check = sections[1]
+
+        if len(to_check) != 0:
+            new_nodes.append(TextNode(to_check, TextType.TEXT))
+
+    return new_nodes
+
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+    to_check = ""
+    for old in old_nodes:
+        if old.text_type != TextType.TEXT:
+            new_nodes.append(old)
+            continue
+
+        matches = extract_markdown_links(old.text)
+
+        if matches == []:
+            new_nodes.append(old)
+            continue
+        
+        to_check = old.text
+        for match in matches:
+            while True:
+                sections = to_check.split(f"[{match[0]}]({match[1]})", 1)
+                if len(sections) == 1:
+                    break
+                if not sections[0] == "":
+                    new_nodes.append(TextNode(sections[0], TextType.TEXT))
+                new_nodes.append(TextNode(match[0], TextType.LINK, match[1]))
+                to_check = sections[1]
+
+    if len(to_check) != 0:
+        new_nodes.append(TextNode(to_check, TextType.TEXT))
+    return new_nodes
+
+
+def text_to_textnodes(text):
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    return nodes
+
+
+def markdown_to_blocks(markdown):
+    blocks = markdown.split("\n\n")
+    blocks = [block.strip() for block in blocks]
+    blocks = [block for block in blocks if block != "" and block != "\n"]
+    return blocks
+
+    
