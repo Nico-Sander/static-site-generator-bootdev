@@ -1,5 +1,6 @@
 from leafnode import LeafNode
 from textnode import TextNode, TextType
+from blocktype import BlockType
 import re
 
 def text_node_to_html_node(text_node):
@@ -145,3 +146,51 @@ def markdown_to_blocks(markdown):
     return blocks
 
     
+def block_to_blocktype(block):
+    # Check if block is heading
+    hash_found = False
+    for ch in block[:7]:
+        if ch == "#":
+            hash_found = True
+        elif ch == " ":
+            if hash_found:
+                return BlockType.HEADING
+        else:
+            break
+
+    # Check if block is code
+    if block.startswith("```") and block.endswith("```"):
+        return BlockType.CODE
+
+    # Check it block is quote
+    is_quote = True
+    lines = block.split("\n")
+    for line in lines:
+        if not line.strip().startswith(">"):
+            is_quote = False
+            break
+    if is_quote:
+        return BlockType.QUOTE
+
+    # Check if block is unordered list
+    is_uList = True
+    for line in lines:
+        if not line.strip().startswith("- "):
+            is_uList = False
+            break
+    if is_uList:
+        return BlockType.UNORDERED_LIST
+
+    # Check if block is ordered list
+    number = 1
+    is_uoList = True
+    for line in lines:
+        if not line.strip().startswith(f"{number}. "):
+            is_uoList = False
+            break
+        number += 1
+    if is_uoList:
+        return BlockType.ORDERED_LIST
+
+    return BlockType.PARAGRAPH
+
