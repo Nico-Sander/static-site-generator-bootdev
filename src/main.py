@@ -1,9 +1,10 @@
 from textnode import TextNode, TextType
 
+
 def main():
-    tt = TextType.TEXT
-    tn = TextNode("Hello World", tt, "google.com")
-    print(tn)
+    node = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")
+    print(node)
 
 
 main()
+
