@@ -1,9 +1,12 @@
 import os
 import shutil
+from generate_page import generate_page
 
 
 def main():
-    clean_copy_to_public() 
+    clean_copy_to_public()
+    generate_page("content/index.md", "template.html", "public/index.html")
+
 
 def clean_copy_to_public():
     # Get an empty public directory
